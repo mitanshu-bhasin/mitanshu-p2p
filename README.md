@@ -1,11 +1,22 @@
-# mitanshu-p2p
-🚀 MITANSHU P2P ENGINE - ENTERPRISE SUITE v13.1 (Patched)
+#🚀 MITANSHU P2P ENGINE - ENTERPRISE SUITE v14.0 (Arcade Patch)
 
-"Fuck nothing in life is achievable. You just need the right code and a rebellious mindset." Welcome to the ultimate, zero-trust, browser-based Peer-to-Peer (P2P) network. Bina kisi creepy central server ke, direct device-to-device communication. Sirf ek HTML file mein poora Enterprise Suite pel diya hai tera bhai ne. No backend bullshit, no data harvesting—just pure, unadulterated WebRTC magic.
+"Fuck nothing in life is achievable. You just need the right code and a rebellious mindset." Welcome to the ultimate, zero-trust, browser-based Peer-to-Peer (P2P) network. Bina kisi creepy central server ke, direct device-to-device communication. Sirf ek HTML file mein poora Enterprise Suite aur ab Arcade pel diya hai tera bhai ne. No backend bullshit, no data harvesting—just pure, unadulterated WebRTC magic.
 
 Designed and architected by Mitanshu Bhasin (Cyber Hygiene Practitioner & Python Elite).
 
 🌪️ Features that make other apps cry
+
+🎮 The Zero-Latency P2P Arcade (NEW)
+
+Boring meetings ya code compile hone ka wait kar rahe ho? Tera bhai ne serverless gaming integrate kar di hai. All game states are synchronized in real-time using secure WebRTC Data Channels. Zero lag, zero servers.
+
+♟️ Grandmaster Chess (P2P): Real-time board state synchronization. Move your knights and queens directly across the secure tunnel. No central server dictating the rules, just pure client-side logic mapped over P2P.
+
+❌⭕ Tic-Tac-Toe (Zero-Trust Edition): The classic X's and O's, but engineered for instant state resolution. Ekdum real-time, click karte hi peer ke screen pe update.
+
+✊✋✌️ Stone Paper Scissors: Settle disputes like a pro over an encrypted channel. State syncs instantly when both peers make a move.
+
+💼 The Enterprise Core
 
 💬 Stealth Chat (E2E Encrypted): Koi third-party database nahi. Your messages go directly from your Asus laptop to your friend's screen. Snoopers gonna weep.
 
@@ -25,11 +36,11 @@ HTML5: Live preview frame.
 
 🛠️ The Tech Stack (Under the Hood)
 
-Pura system frontend-heavy aur hyper-optimized hai. Here is what's running this beast:
+Pura system frontend-heavy, serverless, aur hyper-optimized hai. Here is what's running this beast:
 
-Core Logic: Vanilla JavaScript (ES6+), HTML5, WebRTC.
+Core Logic: Vanilla JavaScript (ES6+), HTML5 Canvas/DOM manipulations for gaming, WebRTC.
 
-Networking: PeerJS (for WebRTC signaling and connection abstraction).
+Networking: PeerJS (for WebRTC signaling and connection abstraction - handles Game State Payloads).
 
 UI/UX: Tailwind CSS (via CDN) with custom Glassmorphism panels and responsive mobile-first design.
 
@@ -57,7 +68,7 @@ Wait for the engine to initialize and give you a Digital ID.
 
 Share your Link/ID with your peer.
 
-They enter your ID (or click your auto-connect link) and boom—you are linked in the matrix.
+They enter your ID (or click your auto-connect link) and boom—you are linked in the matrix. Play chess or write python, it's your world now.
 
 Pro-Tip: Host this on Netlify, Vercel, or GitHub Pages for the ultimate shareable URL experience. The app has a built-in auto-connect feature if you pass ?peer=YOUR_ID in the URL!
 
