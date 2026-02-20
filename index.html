@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 
+      MITANSHU P2P ENGINE - Professional Edition v3.3
+      Author: Mitanshu Bhasin (Cyber Hygiene Practitioner & Python Elite)
+      Description: Unrestricted, unlimited peer-to-peer file transfer engine.
+    -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/logo.png">
+    
+    <!-- Primary SEO -->
+    <title>MITANSHU P2P ENGINE | Unlimited File Transfer</title>
+    <meta name="description" content="Send massive files directly between devices. No cloud limits, no storage caps. Developed by Mitanshu Bhasin.">
+    <meta name="keywords" content="Mitanshu Bhasin, P2P Transfer, Unlimited File Share, WebRTC, Secure File Transfer">
+    <meta name="author" content="Mitanshu Bhasin">
+    <meta name="robots" content="index, follow">
+
+    <!-- PWA / Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Libraries -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f8fafc; 
+            color: #1e293b; 
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 140px; /* Space for the bottom banner so it doesn't cover content */
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .shadow-premium { 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* Animation for Modal */
+        .modal-enter { opacity: 0; transform: scale(0.95); pointer-events: none; }
+        .modal-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .transition-modal { transition: all 0.2s ease-out; }
+
+        /* Ad Banner Gradient */
+        .ad-banner-gradient {
+            background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+            border-top: 1px solid #bae6fd;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-slate-50">
+
+    <div class="max-w-4xl w-full bg-white shadow-premium rounded-[2rem] p-6 md:p-10 border border-slate-200 relative overflow-hidden">
+        
+        <!-- Header & Info Button -->
+        <header class="flex flex-col items-center justify-center relative mb-8">
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2">
+                Cyber Hygiene Verified
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900 italic uppercase text-center">
+                Mitanshu <span class="text-blue-600">P2P</span> Engine
+            </h1>
+            <p class="text-xs text-slate-500 font-semibold mt-1">Unlimited. Unrestricted. Secure.</p>
+            
+            <!-- The 'i' Button -->
+            <button onclick="toggleModal()" class="absolute top-0 right-0 p-2 bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 rounded-full transition shadow-sm" aria-label="Info & Contact">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left: Identity & Connect -->
+            <div class="lg:col-span-5 space-y-5">
+                <!-- My ID Card -->
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <label class="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Your Unique Peer ID</label>
+                    <div class="flex gap-2">
+                        <div id="peer-id" class="flex-1 text-sm font-mono font-bold text-slate-700 bg-white p-3 rounded-xl border border-slate-200 truncate select-all">
+                            Initializing...
+                        </div>
+                        <button onclick="copyID()" class="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-200 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Connect & Send Card -->
+                <div class="bg-slate-900 p-6 rounded-2xl text-white shadow-2xl shadow-slate-400/50">
+                    <h3 class="font-bold text-sm mb-4 text-slate-200 uppercase tracking-wide flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Establish Connection
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <input type="text" id="remote-id" placeholder="Paste Receiver's ID Here" 
+                                class="w-full bg-slate-800 border border-slate-700 p-3 outline-none focus:ring-2 focus:ring-blue-500 rounded-xl text-sm placeholder:text-slate-500 transition">
+                        </div>
+                        
+                        <div>
+                            <input type="file" id="file-input" multiple class="hidden">
+                            <button onclick="document.getElementById('file-input').click()" 
+                                    class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-3 rounded-xl font-semibold text-xs hover:bg-slate-700 transition flex items-center justify-center gap-2 group">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                                SELECT FILES
+                            </button>
+                            <div id="file-count" class="text-[10px] text-slate-500 mt-1 text-center hidden">0 files selected</div>
+                        </div>
+                        
+                        <button onclick="startBatchTransfer()" 
+                                class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-sm hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-900/50">
+                            INITIATE TRANSFER
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Status Monitor -->
+            <div class="lg:col-span-7 flex flex-col h-full min-h-[400px]">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 flex-1 flex flex-col shadow-sm">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Live Operations</h3>
+                        <div class="flex items-center gap-2">
+                            <span id="speed-indicator" class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">0 KB/s</span>
+                            <div class="w-2 h-2 rounded-full bg-slate-300" id="status-dot"></div>
+                        </div>
+                    </div>
+
+                    <!-- Status Text -->
+                    <div id="status-text" class="text-xl font-bold text-slate-800 mb-2 truncate">System Idle</div>
+                    <p id="current-op" class="text-xs text-slate-400 mb-6 font-mono">WAITING FOR COMMAND...</p>
+
+                    <!-- Progress Bar -->
+                    <div class="relative w-full bg-slate-100 h-4 rounded-full overflow-hidden mb-6">
+                        <div id="progress-bar" class="absolute top-0 left-0 h-full bg-blue-600 w-0 transition-all duration-300 ease-out"></div>
+                    </div>
+
+                    <!-- Queue List -->
+                    <div class="flex-1 overflow-y-auto custom-scrollbar border-t border-slate-100 pt-4" id="transfer-list">
+                        <div class="text-center py-10 opacity-30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                            <p class="text-xs font-medium">Queue Empty</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Area -->
+        <div id="download-area" class="mt-6 bg-green-50 border border-green-200 rounded-2xl p-6 hidden animate-bounce-in">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-green-500 text-white p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></div>
+                <h4 class="font-bold text-green-900 text-sm">Transfers Completed Successfully</h4>
+            </div>
+            <div id="file-list" class="flex flex-wrap gap-3"></div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center border-t border-slate-100 pt-6 pb-4">
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">
+                &copy; 2026 Mitanshu Bhasin &bull; Cyber Hygiene Practitioner &bull; Elite Python Dev
+            </p>
+            <!-- Legal Links -->
+            <div class="flex justify-center gap-4 text-[10px] text-blue-400 font-medium">
+                <a href="/privacy.html" class="hover:text-blue-600 hover:underline transition">Privacy Policy</a>
+                <span class="text-slate-300">&bull;</span>
+                <a href="/terms.html" class="hover:text-blue-600 hover:underline transition">Terms of Service</a>
+                <span class="text-slate-300">&bull;</span>
+                <a href="/license.html" class="hover:text-blue-600 hover:underline transition">Open Source License</a>
+            </div>
+        </footer>
+
+        <!-- INFORMATION MODAL (The 'i' Button Content) -->
+        <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-modal modal-enter hidden">
+            <div class="bg-white w-full max-w-lg mx-4 rounded-3xl shadow-2xl p-8 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
+                
+                <button onclick="toggleModal()" class="absolute top-4 right-4 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+
+                <h2 class="text-2xl font-black italic text-slate-900 mb-1">UNRESTRICTED.</h2>
+                <p class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-6">The Mitanshu Philosophy</p>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
+                            Key Features
+                        </h3>
+                        <ul class="text-xs text-slate-600 space-y-2 pl-6 list-disc marker:text-blue-400">
+                            <li><strong>Unlimited Transfers:</strong> No 10GB caps. Send 100GB+ directly.</li>
+                            <li><strong>No Cloud Storage:</strong> Data moves Device-to-Device (P2P). Zero privacy risk.</li>
+                            <li><strong>Batch Processing:</strong> Select multiple files or folders instantly.</li>
+                            <li><strong>Industry Grade:</strong> Built with WebRTC & Cyber Hygiene standards.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="text-sm font-bold text-slate-800 mb-2">How to Use</h3>
+                        <ol class="text-xs text-slate-600 space-y-2 list-decimal pl-4">
+                            <li>Open this app on both Sender & Receiver devices.</li>
+                            <li>Copy the <strong>Peer ID</strong> from the Receiver.</li>
+                            <li>Paste the ID into the Sender's "Paste Receiver's ID" box.</li>
+                            <li>Select your files and hit <strong>INITIATE TRANSFER</strong>.</li>
+                        </ol>
+                    </div>
+
+                    <!-- Contact Engine Father Section -->
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Developer Contact</h3>
+                         <a href="https://wa.me/918076108584" target="_blank" class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition group">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-green-500 text-white p-1.5 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-green-800">Contact Engine Father</p>
+                                    <p class="text-[10px] text-green-600">+91 80761 08584</p>
+                                </div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 group-hover:translate-x-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- KRISHNA GLASS HOUSE BOTTOM BANNER (New Addition) -->
+    <div id="ad-banner" class="fixed bottom-0 left-0 w-full z-[60] translate-y-full transition-transform duration-500 ease-out shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
+        <div class="ad-banner-gradient px-4 py-3 sm:py-4">
+            <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 relative">
+                
+                <!-- Close Button (Floating) -->
+                <button onclick="closeAd()" class="absolute -top-6 right-0 sm:static sm:order-3 bg-red-100 hover:bg-red-200 text-red-600 p-1.5 rounded-full transition shadow-sm border border-red-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+
+                <!-- Ad Content -->
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="w-10 h-10 bg-blue-600 shrink-0 text-white rounded-lg flex items-center justify-center shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="text-sm font-black text-slate-800 uppercase leading-none">Krishna Glass House</h3>
+                        <p class="text-[10px] font-bold text-blue-600 tracking-wider uppercase mb-0.5">(Aluminium & PVC Works)</p>
+                        <p class="text-[10px] text-slate-500 leading-tight hidden sm:block">Premium Aluminium doors, windows & PVC furniture. Durable & Affordable.</p>
+                    </div>
+                </div>
+
+                <!-- CTA Button -->
+                <a href="https://wa.me/918700162623" target="_blank" class="w-full sm:w-auto bg-[#25D366] text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-green-200 hover:shadow-green-300 hover:bg-[#20bd5a] transition active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    Contact on WhatsApp
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl transition-all translate-y-20 opacity-0 z-50 flex items-center gap-2">
+        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> <span id="toast-msg">Notification</span>
+    </div>
+
+    <script>
+        // --- LOGIC CORE ---
+        const CHUNK_SIZE = 16384 * 4; // 64KB Chunks
+        let peer = new Peer();
+        let conn;
+        let fileQueue = [];
+        let currentFileIndex = 0;
+        let incomingChunks = [];
+        let startTime = 0;
+
+        // DOM Elements
+        const statusText = document.getElementById('status-text');
+        const progressBar = document.getElementById('progress-bar');
+        const fileInput = document.getElementById('file-input');
+        const transferList = document.getElementById('transfer-list');
+        const currentOp = document.getElementById('current-op');
+        const statusDot = document.getElementById('status-dot');
+        const fileCountDisplay = document.getElementById('file-count');
+
+        // AD BANNER LOGIC (Updated to Bottom Slide)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const adBanner = document.getElementById('ad-banner');
+                adBanner.classList.remove('translate-y-full');
+            }, 5000); // 5 Seconds Delay
+        });
+
+        function closeAd() {
+            const adBanner = document.getElementById('ad-banner');
+            adBanner.classList.add('translate-y-full');
+            // Optional: Remove completely after animation
+            // setTimeout(() => adBanner.style.display = 'none', 500); 
+        }
+
+        // Modal Logic (Info Button)
+        function toggleModal() {
+            const modal = document.getElementById('info-modal');
+            if(modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('modal-enter');
+                    modal.classList.add('modal-active');
+                }, 10);
+            } else {
+                modal.classList.remove('modal-active');
+                modal.classList.add('modal-enter');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            }
+        }
+
+        // Service Worker (Uncomment for Production)
+        if ('serviceWorker' in navigator) {
+             window.addEventListener('load', () => {
+                 navigator.serviceWorker.register('/sw.js').catch(err => console.log("SW skipped for local testing"));
+             });
+        }
+
+        // File Selection UI
+        fileInput.onchange = () => {
+            const files = fileInput.files;
+            if(files.length > 0) {
+                fileCountDisplay.innerText = `${files.length} files queued`;
+                fileCountDisplay.classList.remove('hidden');
+                
+                transferList.innerHTML = ''; // Clear old list
+                Array.from(files).forEach((f, index) => {
+                    const div = document.createElement('div');
+                    div.className = "flex justify-between items-center p-3 mb-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-semibold";
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="text-slate-400 font-mono">0${index+1}</span>
+                            <span class="truncate text-slate-700">${f.name}</span>
+                        </div>
+                        <span class="text-blue-600 text-[10px] bg-blue-50 px-2 py-1 rounded border border-blue-100">
+                            ${(f.size/1024/1024).toFixed(2)} MB
+                        </span>`;
+                    transferList.appendChild(div);
+                });
+                showToast(`${files.length} Files Queued. Ready.`);
+            }
+        };
+
+        // Toast System
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // ID Management
+        function copyID() {
+            const id = document.getElementById('peer-id').innerText;
+            if(id === 'Initializing...') return;
+            navigator.clipboard.writeText(id);
+            showToast("ID Copied to Clipboard");
+        }
+
+        // PeerJS Setup
+        peer.on('open', (id) => {
+            document.getElementById('peer-id').innerText = id;
+            statusText.innerText = "System Ready";
+            statusDot.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]";
+        });
+
+        peer.on('error', (err) => {
+            statusText.innerText = "Error Detected";
+            currentOp.innerText = err.type.toUpperCase();
+            statusDot.className = "w-2 h-2 rounded-full bg-red-500";
+            showToast(`Error: ${err.type}`);
+        });
+
+        // Receiver Logic
+        peer.on('connection', (connection) => {
+            conn = connection;
+            statusText.innerText = "Peer Connected";
+            statusDot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse";
+            showToast("Incoming Connection Established");
+            setupReceiver();
+        });
+
+        function setupReceiver() {
+            let receivedSize = 0;
+            let totalSize = 0;
+            let fileName = "";
+            let fileType = "";
+
+            conn.on('data', (data) => {
+                if (data.type === 'START') {
+                    incomingChunks = [];
+                    receivedSize = 0;
+                    totalSize = data.size;
+                    fileName = data.name;
+                    fileType = data.mime;
+                    
+                    statusText.innerText = "Receiving Data...";
+                    currentOp.innerText = `DOWNLOADING: ${fileName}`;
+                    startTime = Date.now();
+                } 
+                else if (data.type === 'CHUNK') {
+                    incomingChunks.push(data.chunk);
+                    receivedSize += data.chunk.byteLength;
+                    const percent = Math.floor((receivedSize / totalSize) * 100);
+                    updateUI(percent, receivedSize);
+                } 
+                else if (data.type === 'END') {
+                    const fullBlob = new Blob(incomingChunks, { type: fileType });
+                    const url = URL.createObjectURL(fullBlob);
+                    
+                    const btn = document.createElement('a');
+                    btn.href = url;
+                    btn.download = fileName;
+                    btn.className = "bg-white border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm text-xs font-bold hover:bg-green-50 transition flex items-center justify-between group w-full sm:w-auto";
+                    btn.innerHTML = `
+                        <span class="truncate max-w-[150px]">${fileName}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 group-hover:translate-y-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    `;
+                    
+                    document.getElementById('file-list').appendChild(btn);
+                    document.getElementById('download-area').classList.remove('hidden');
+                    
+                    statusText.innerText = "Transfer Complete";
+                    currentOp.innerText = "IDLE - WAITING FOR NEXT";
+                    progressBar.style.width = '0%';
+                }
+            });
+        }
+
+        function updateUI(percent, bytesLoaded) {
+            progressBar.style.width = percent + '%';
+            
+            const now = Date.now();
+            const duration = (now - startTime) / 1000;
+            if(duration > 0) {
+                const speed = (bytesLoaded / 1024) / duration; // KB/s
+                const speedText = speed > 1024 
+                    ? (speed/1024).toFixed(1) + " MB/s" 
+                    : Math.floor(speed) + " KB/s";
+                document.getElementById('speed-indicator').innerText = speedText;
+            }
+        }
+
+        // Sender Logic
+        function startBatchTransfer() {
+            const targetId = document.getElementById('remote-id').value;
+            fileQueue = Array.from(fileInput.files);
+
+            if (!targetId || fileQueue.length === 0) {
+                showToast("ID or Files Missing!");
+                return;
+            }
+
+            statusText.innerText = "Negotiating Connection...";
+            conn = peer.connect(targetId);
+
+            conn.on('open', () => {
+                showToast("Connected! Starting Batch...");
+                currentFileIndex = 0;
+                sendNextInQueue();
+            });
+            
+            conn.on('error', () => {
+                showToast("Connection Failed. Check ID.");
+            });
+        }
+
+        async function sendNextInQueue() {
+            if (currentFileIndex < fileQueue.length) {
+                const file = fileQueue[currentFileIndex];
+                statusText.innerText = `Sending File ${currentFileIndex + 1}/${fileQueue.length}`;
+                currentOp.innerText = `UPLOADING: ${file.name.toUpperCase()}`;
+                startTime = Date.now();
+                await processAndSend(file);
+            } else {
+                statusText.innerText = "Batch Complete";
+                currentOp.innerText = "ALL FILES DELIVERED";
+                showToast("All files sent successfully!");
+                setTimeout(() => { progressBar.style.width = '0%'; }, 2000);
+            }
+        }
+
+        async function processAndSend(file) {
+            conn.send({ type: 'START', name: file.name, size: file.size, mime: file.type });
+
+            let offset = 0;
+            // Using a recursive function with setTimeout to keep UI responsive
+            const readNext = () => {
+                if (offset < file.size) {
+                    const slice = file.slice(offset, offset + CHUNK_SIZE);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        conn.send({ type: 'CHUNK', chunk: e.target.result });
+                        offset += CHUNK_SIZE;
+                        const percent = Math.min(100, Math.floor((offset / file.size) * 100));
+                        updateUI(percent, offset);
+                        setTimeout(readNext, 0); 
+                    };
+                    reader.readAsArrayBuffer(slice);
+                } else {
+                    conn.send({ type: 'END' });
+                    currentFileIndex++;
+                    setTimeout(sendNextInQueue, 500); // Small delay between files
+                }
+            };
+            readNext();
+        }
+    </script>
+</body>
+</html>
