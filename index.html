@@ -2,534 +2,816 @@
 <html lang="en">
 <head>
     <!-- 
-      MITANSHU P2P ENGINE - Professional Edition v3.3
-      Author: Mitanshu Bhasin (Cyber Hygiene Practitioner & Python Elite)
-      Description: Unrestricted, unlimited peer-to-peer file transfer engine.
+      MITANSHU P2P ENGINE - ENTERPRISE SUITE v13.1 (Patched)
+      Architect: Mitanshu Bhasin (Cyber Hygiene Practitioner & Python Elite)
+      Tech Lead: AI Architect
+      Status: Stable | Shareable Links | Full Duplex Video
     -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <link rel="apple-touch-icon" href="/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <title>MITANSHU P2P | Enterprise Suite</title>
     
-    <!-- Primary SEO -->
-    <title>MITANSHU P2P ENGINE | Unlimited File Transfer</title>
-    <meta name="description" content="Send massive files directly between devices. No cloud limits, no storage caps. Developed by Mitanshu Bhasin.">
-    <meta name="keywords" content="Mitanshu Bhasin, P2P Transfer, Unlimited File Share, WebRTC, Secure File Transfer">
-    <meta name="author" content="Mitanshu Bhasin">
-    <meta name="robots" content="index, follow">
-
-    <!-- PWA / Mobile -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link rel="manifest" href="/manifest.json">
-
-    <!-- Libraries -->
+    <!-- Performance: Defer Loading where possible -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Heavy Libs -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.7/ace.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alasql@4"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        corp: { 900: '#0f172a', 800: '#1e293b', 700: '#334155', 600: '#475569', 500: '#64748b', accent: '#2563eb' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    animation: { 
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'ring': 'ring 2s infinite ease-in-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        ring: {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'rotate(-10deg)' },
+                            '20%, 40%, 60%, 80%': { transform: 'rotate(10deg)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
         
+        /* Mobile Optimization */
         body { 
-            font-family: 'Inter', sans-serif; 
             background: #f8fafc; 
             color: #1e293b; 
+            font-family: 'Inter', sans-serif; 
+            height: 100dvh; 
+            overflow: hidden; 
             -webkit-tap-highlight-color: transparent;
-            padding-bottom: 140px; /* Space for the bottom banner so it doesn't cover content */
         }
-
+        
+        /* Optimized Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        /* Glass Panel */
         .glass-panel {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        @media (min-width: 768px) {
+            .glass-panel {
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+            }
         }
 
-        .shadow-premium { 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
-        }
+        /* Full Screen Utility */
+        :fullscreen { background: #fff; width: 100vw; height: 100vh; overflow: auto; padding: 1rem; }
+        .fs-mode { position: fixed !important; top:0; left:0; right:0; bottom:0; z-index: 9999; border-radius: 0 !important; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        /* Animation for Modal */
-        .modal-enter { opacity: 0; transform: scale(0.95); pointer-events: none; }
-        .modal-active { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .transition-modal { transition: all 0.2s ease-out; }
-
-        /* Ad Banner Gradient */
-        .ad-banner-gradient {
-            background: linear-gradient(to right, #f0f9ff, #e0f2fe);
-            border-top: 1px solid #bae6fd;
-        }
+        /* Smooth Mobile Transitions */
+        .view-section { transition: opacity 0.2s ease-in-out; }
+        
+        .btn-active { @apply bg-blue-600 text-white shadow-lg shadow-blue-200; }
+        .btn-inactive { @apply text-slate-400 hover:bg-slate-100; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 bg-slate-50">
+<body class="flex flex-col md:flex-row bg-slate-50 relative">
+    
+    <!-- Decoration -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none z-0"></div>
 
-    <div class="max-w-4xl w-full bg-white shadow-premium rounded-[2rem] p-6 md:p-10 border border-slate-200 relative overflow-hidden">
+    <!-- MAIN LAYOUT -->
+    <div class="relative z-10 w-full h-full flex flex-col md:flex-row p-2 md:p-4 gap-3 max-w-[1920px] mx-auto">
         
-        <!-- Header & Info Button -->
-        <header class="flex flex-col items-center justify-center relative mb-8">
-            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2">
-                Cyber Hygiene Verified
+        <!-- 1. MOBILE HEADER -->
+        <div class="md:hidden flex justify-between items-center px-2 py-1">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md">M</div>
+                <span class="font-bold text-slate-800 text-sm tracking-tight">MITANSHU <span class="text-blue-600">P2P</span></span>
             </div>
-            <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900 italic uppercase text-center">
-                Mitanshu <span class="text-blue-600">P2P</span> Engine
-            </h1>
-            <p class="text-xs text-slate-500 font-semibold mt-1">Unlimited. Unrestricted. Secure.</p>
-            
-            <!-- The 'i' Button -->
-            <button onclick="toggleModal()" class="absolute top-0 right-0 p-2 bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-600 rounded-full transition shadow-sm" aria-label="Info & Contact">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </button>
-        </header>
-
-        <!-- Main Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Left: Identity & Connect -->
-            <div class="lg:col-span-5 space-y-5">
-                <!-- My ID Card -->
-                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <label class="text-[10px] uppercase font-bold text-slate-400 mb-1 block">Your Unique Peer ID</label>
-                    <div class="flex gap-2">
-                        <div id="peer-id" class="flex-1 text-sm font-mono font-bold text-slate-700 bg-white p-3 rounded-xl border border-slate-200 truncate select-all">
-                            Initializing...
-                        </div>
-                        <button onclick="copyID()" class="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-200 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Connect & Send Card -->
-                <div class="bg-slate-900 p-6 rounded-2xl text-white shadow-2xl shadow-slate-400/50">
-                    <h3 class="font-bold text-sm mb-4 text-slate-200 uppercase tracking-wide flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Establish Connection
-                    </h3>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <input type="text" id="remote-id" placeholder="Paste Receiver's ID Here" 
-                                class="w-full bg-slate-800 border border-slate-700 p-3 outline-none focus:ring-2 focus:ring-blue-500 rounded-xl text-sm placeholder:text-slate-500 transition">
-                        </div>
-                        
-                        <div>
-                            <input type="file" id="file-input" multiple class="hidden">
-                            <button onclick="document.getElementById('file-input').click()" 
-                                    class="w-full bg-slate-800 border border-slate-700 text-slate-300 py-3 rounded-xl font-semibold text-xs hover:bg-slate-700 transition flex items-center justify-center gap-2 group">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
-                                SELECT FILES
-                            </button>
-                            <div id="file-count" class="text-[10px] text-slate-500 mt-1 text-center hidden">0 files selected</div>
-                        </div>
-                        
-                        <button onclick="startBatchTransfer()" 
-                                class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-sm hover:bg-blue-500 transition-all active:scale-95 shadow-lg shadow-blue-900/50">
-                            INITIATE TRANSFER
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Status Monitor -->
-            <div class="lg:col-span-7 flex flex-col h-full min-h-[400px]">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 flex-1 flex flex-col shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Live Operations</h3>
-                        <div class="flex items-center gap-2">
-                            <span id="speed-indicator" class="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded">0 KB/s</span>
-                            <div class="w-2 h-2 rounded-full bg-slate-300" id="status-dot"></div>
-                        </div>
-                    </div>
-
-                    <!-- Status Text -->
-                    <div id="status-text" class="text-xl font-bold text-slate-800 mb-2 truncate">System Idle</div>
-                    <p id="current-op" class="text-xs text-slate-400 mb-6 font-mono">WAITING FOR COMMAND...</p>
-
-                    <!-- Progress Bar -->
-                    <div class="relative w-full bg-slate-100 h-4 rounded-full overflow-hidden mb-6">
-                        <div id="progress-bar" class="absolute top-0 left-0 h-full bg-blue-600 w-0 transition-all duration-300 ease-out"></div>
-                    </div>
-
-                    <!-- Queue List -->
-                    <div class="flex-1 overflow-y-auto custom-scrollbar border-t border-slate-100 pt-4" id="transfer-list">
-                        <div class="text-center py-10 opacity-30">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                            <p class="text-xs font-medium">Queue Empty</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="ping-mobile" class="text-[10px] font-mono text-slate-400 font-bold"></div>
         </div>
 
-        <!-- Success Area -->
-        <div id="download-area" class="mt-6 bg-green-50 border border-green-200 rounded-2xl p-6 hidden animate-bounce-in">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="bg-green-500 text-white p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></div>
-                <h4 class="font-bold text-green-900 text-sm">Transfers Completed Successfully</h4>
+        <!-- 2. SIDEBAR / BOTTOM NAV -->
+        <nav class="glass-panel w-full md:w-20 md:h-full rounded-2xl flex md:flex-col items-center justify-between p-2 z-30 shrink-0 order-2 md:order-1 shadow-lg md:shadow-none overflow-x-auto md:overflow-visible">
+            <div class="hidden md:flex flex-col items-center gap-4 mt-2">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 hover:scale-105 transition">
+                    <span class="font-black text-white">M</span>
+                </div>
             </div>
-            <div id="file-list" class="flex flex-wrap gap-3"></div>
-        </div>
 
-        <!-- Footer -->
-        <footer class="mt-8 text-center border-t border-slate-100 pt-6 pb-4">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">
-                &copy; 2026 Mitanshu Bhasin &bull; Cyber Hygiene Practitioner &bull; Elite Python Dev
-            </p>
-            <!-- Legal Links -->
-            <div class="flex justify-center gap-4 text-[10px] text-blue-400 font-medium">
-                <a href="/privacy.html" class="hover:text-blue-600 hover:underline transition">Privacy Policy</a>
-                <span class="text-slate-300">&bull;</span>
-                <a href="/terms.html" class="hover:text-blue-600 hover:underline transition">Terms of Service</a>
-                <span class="text-slate-300">&bull;</span>
-                <a href="/license.html" class="hover:text-blue-600 hover:underline transition">Open Source License</a>
-            </div>
-        </footer>
-
-        <!-- INFORMATION MODAL (The 'i' Button Content) -->
-        <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-modal modal-enter hidden">
-            <div class="bg-white w-full max-w-lg mx-4 rounded-3xl shadow-2xl p-8 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 bg-blue-600"></div>
-                
-                <button onclick="toggleModal()" class="absolute top-4 right-4 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <!-- Nav Icons (Expanded List) -->
+            <div class="flex md:flex-col gap-2 w-full md:w-auto justify-between md:justify-center px-2 md:px-0">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-active min-w-[50px]">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Home</span>
                 </button>
+                <button onclick="switchTab('chat')" id="nav-chat" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-inactive min-w-[50px]">
+                    <i class="fas fa-comment-alt text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Chat</span>
+                </button>
+                <button onclick="switchTab('video')" id="nav-video" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-inactive min-w-[50px]">
+                    <i class="fas fa-video text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Video</span>
+                </button>
+                <button onclick="switchTab('map')" id="nav-map" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-inactive min-w-[50px]">
+                    <i class="fas fa-map-marked-alt text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Map</span>
+                </button>
+                <button onclick="switchTab('files')" id="nav-files" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-inactive min-w-[50px]">
+                    <i class="fas fa-folder-open text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Files</span>
+                </button>
+                <button onclick="switchTab('code')" id="nav-code" class="p-3 rounded-xl transition flex flex-col items-center gap-1 group btn-inactive min-w-[50px]">
+                    <i class="fas fa-code text-lg"></i>
+                    <span class="text-[9px] font-bold md:hidden">Code</span>
+                </button>
+            </div>
 
-                <h2 class="text-2xl font-black italic text-slate-900 mb-1">UNRESTRICTED.</h2>
-                <p class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-6">The Mitanshu Philosophy</p>
+            <div class="hidden md:flex flex-col items-center gap-4 mb-2">
+                 <div id="ping-indicator" class="text-[9px] font-mono text-slate-400 font-bold hidden">0ms</div>
+            </div>
+        </nav>
 
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" /></svg>
-                            Key Features
-                        </h3>
-                        <ul class="text-xs text-slate-600 space-y-2 pl-6 list-disc marker:text-blue-400">
-                            <li><strong>Unlimited Transfers:</strong> No 10GB caps. Send 100GB+ directly.</li>
-                            <li><strong>No Cloud Storage:</strong> Data moves Device-to-Device (P2P). Zero privacy risk.</li>
-                            <li><strong>Batch Processing:</strong> Select multiple files or folders instantly.</li>
-                            <li><strong>Industry Grade:</strong> Built with WebRTC & Cyber Hygiene standards.</li>
-                        </ul>
+        <!-- 3. MAIN CONTENT AREA -->
+        <main class="flex-1 h-full relative overflow-hidden rounded-3xl glass-panel flex flex-col shadow-sm md:shadow-xl order-1 md:order-2">
+            
+            <!-- DESKTOP HEADER -->
+            <header class="hidden md:flex px-6 py-4 border-b border-slate-100 justify-between items-center bg-white/50 backdrop-blur-sm">
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
+                        MITANSHU <span class="text-blue-600">P2P</span> ENTERPRISE
+                        <span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-700 border border-blue-200 uppercase font-mono tracking-wide">v13.1 Patched</span>
+                    </h1>
+                    <p class="text-[10px] text-slate-500 font-mono tracking-wider mt-0.5 uppercase">Architect: Mitanshu Bhasin | Status: <span id="sys-status">Ready</span></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="connection-status" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-bold font-mono transition-all">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> OFFLINE
                     </div>
+                </div>
+            </header>
 
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="text-sm font-bold text-slate-800 mb-2">How to Use</h3>
-                        <ol class="text-xs text-slate-600 space-y-2 list-decimal pl-4">
-                            <li>Open this app on both Sender & Receiver devices.</li>
-                            <li>Copy the <strong>Peer ID</strong> from the Receiver.</li>
-                            <li>Paste the ID into the Sender's "Paste Receiver's ID" box.</li>
-                            <li>Select your files and hit <strong>INITIATE TRANSFER</strong>.</li>
-                        </ol>
-                    </div>
-
-                    <!-- Contact Engine Father Section -->
-                    <div class="mt-4 pt-4 border-t border-slate-100">
-                         <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Developer Contact</h3>
-                         <a href="https://wa.me/918076108584" target="_blank" class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition group">
-                            <div class="flex items-center gap-3">
-                                <div class="bg-green-500 text-white p-1.5 rounded-full">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-green-800">Contact Engine Father</p>
-                                    <p class="text-[10px] text-green-600">+91 80761 08584</p>
+            <!-- VIEW 1: DASHBOARD (Home) -->
+            <div id="view-dashboard" class="view-section flex-1 p-4 md:p-8 overflow-y-auto bg-white/40">
+                <div class="max-w-5xl mx-auto flex flex-col gap-8 h-full">
+                    
+                    <!-- Hero Section -->
+                    <div class="flex flex-col md:flex-row gap-8 items-center justify-between mt-4">
+                        <div class="space-y-4 animate-[fadeIn_0.5s] md:w-1/2 text-center md:text-left">
+                            <h2 class="text-4xl md:text-6xl font-black italic text-slate-800 tracking-tighter leading-none">
+                                ENGINEERING <br><span class="text-blue-600">EXCELLENCE</span>
+                            </h2>
+                            <p class="text-slate-500 text-sm md:text-lg font-light leading-relaxed">
+                                Modular P2P Suite. Zero-Trust Architecture.
+                            </p>
+                            <div id="auto-connect-msg" class="hidden text-sm text-blue-600 font-bold bg-blue-50 p-2 rounded-lg border border-blue-200 inline-block animate-pulse">
+                                <i class="fas fa-link mr-1"></i> Joining Shared Link...
+                            </div>
+                        </div>
+                        
+                        <!-- Connection Module -->
+                        <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-xl shadow-slate-100/50 w-full md:w-1/2 space-y-4 relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fas fa-network-wired text-8xl text-blue-600"></i></div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">My Digital ID</label>
+                                <div class="flex gap-2 mt-1">
+                                    <div id="my-id" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-sm text-blue-700 select-all truncate flex items-center">
+                                        <i class="fas fa-circle-notch fa-spin mr-2 text-slate-400"></i> Initializing...
+                                    </div>
+                                    <button onclick="copyMyLink()" class="px-4 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl font-bold transition flex items-center gap-2">
+                                        <i class="fas fa-share-alt"></i> Share
+                                    </button>
                                 </div>
                             </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 group-hover:translate-x-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </a>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Connect to Peer</label>
+                                <div class="flex gap-2 mt-1">
+                                    <input type="text" id="remote-id" placeholder="Paste Peer ID" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-sm outline-none focus:border-blue-500 transition">
+                                    <button onclick="connectToPeer()" class="px-6 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-900 transition shadow-lg">
+                                        LINK
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
+
+                    <!-- Feature Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-20 md:pb-0">
+                        <div onclick="switchTab('chat')" class="bg-white p-5 rounded-2xl border border-slate-100 hover:border-blue-300 hover:shadow-lg transition cursor-pointer group">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3"><i class="fas fa-comment-alt"></i></div>
+                            <h4 class="font-bold text-slate-800 text-sm">Secure Chat</h4>
+                        </div>
+                        <div onclick="switchTab('video')" class="bg-white p-5 rounded-2xl border border-slate-100 hover:border-purple-300 hover:shadow-lg transition cursor-pointer group">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-3"><i class="fas fa-video"></i></div>
+                            <h4 class="font-bold text-slate-800 text-sm">Video & Screen</h4>
+                        </div>
+                        <div onclick="switchTab('map')" class="bg-white p-5 rounded-2xl border border-slate-100 hover:border-emerald-300 hover:shadow-lg transition cursor-pointer group">
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3"><i class="fas fa-map-marked-alt"></i></div>
+                            <h4 class="font-bold text-slate-800 text-sm">Live GPS Map</h4>
+                        </div>
+                        <div onclick="switchTab('files')" class="bg-white p-5 rounded-2xl border border-slate-100 hover:border-orange-300 hover:shadow-lg transition cursor-pointer group">
+                            <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center mb-3"><i class="fas fa-folder-open"></i></div>
+                            <h4 class="font-bold text-slate-800 text-sm">File Transfer</h4>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </div>
-
-    <!-- KRISHNA GLASS HOUSE BOTTOM BANNER (New Addition) -->
-    <div id="ad-banner" class="fixed bottom-0 left-0 w-full z-[60] translate-y-full transition-transform duration-500 ease-out shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
-        <div class="ad-banner-gradient px-4 py-3 sm:py-4">
-            <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 relative">
+            <!-- VIEW 2: CHAT (Dedicated) -->
+            <div id="view-chat" class="view-section hidden flex-1 flex flex-col h-full bg-white relative">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 backdrop-blur-sm z-10">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><i class="fas fa-lock"></i></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-sm">Encrypted Channel</h3>
+                            <p class="text-[10px] text-green-600 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Active</p>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('chat-container').innerHTML=''" class="text-slate-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
+                </div>
                 
-                <!-- Close Button (Floating) -->
-                <button onclick="closeAd()" class="absolute -top-6 right-0 sm:static sm:order-3 bg-red-100 hover:bg-red-200 text-red-600 p-1.5 rounded-full transition shadow-sm border border-red-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-
-                <!-- Ad Content -->
-                <div class="flex items-center gap-4 w-full sm:w-auto">
-                    <div class="w-10 h-10 bg-blue-600 shrink-0 text-white rounded-lg flex items-center justify-center shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
+                <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
+                    <div class="text-center text-[10px] text-slate-300 font-bold my-4">--- END-TO-END ENCRYPTED ---</div>
+                </div>
+                
+                <div class="p-4 border-t border-slate-100 bg-slate-50">
+                    <div class="flex gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                        <input type="text" id="chat-input" placeholder="Type a secure message..." class="flex-1 px-3 py-2 text-sm outline-none rounded-lg" onkeypress="if(event.key==='Enter') sendMsg()">
+                        <button onclick="sendMsg()" class="bg-blue-600 text-white w-10 h-10 rounded-lg shadow-md hover:bg-blue-700 transition flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
                     </div>
-                    <div class="text-left">
-                        <h3 class="text-sm font-black text-slate-800 uppercase leading-none">Krishna Glass House</h3>
-                        <p class="text-[10px] font-bold text-blue-600 tracking-wider uppercase mb-0.5">(Aluminium & PVC Works)</p>
-                        <p class="text-[10px] text-slate-500 leading-tight hidden sm:block">Premium Aluminium doors, windows & PVC furniture. Durable & Affordable.</p>
+                </div>
+            </div>
+
+            <!-- VIEW 3: VIDEO (Dedicated + Screen Share) -->
+            <div id="view-video" class="view-section hidden flex-1 flex flex-col h-full bg-slate-900 relative overflow-hidden">
+                <!-- Video Layer -->
+                <div class="absolute inset-0 flex items-center justify-center bg-slate-900">
+                    <video id="remote-video" autoplay playsinline class="w-full h-full object-contain"></video>
+                    
+                    <!-- Local PIP -->
+                    <div class="absolute top-4 right-4 w-32 md:w-48 aspect-video bg-black rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl z-20">
+                        <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover opacity-90"></video>
+                    </div>
+
+                    <!-- Placeholder -->
+                    <div id="call-placeholder" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-500">
+                        <div class="w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 animate-pulse">
+                            <i class="fas fa-video text-5xl text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Video Uplink Ready</h3>
+                        <p class="text-sm mt-2 opacity-60">Establish connection before calling</p>
                     </div>
                 </div>
 
-                <!-- CTA Button -->
-                <a href="https://wa.me/918700162623" target="_blank" class="w-full sm:w-auto bg-[#25D366] text-white px-6 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-green-200 hover:shadow-green-300 hover:bg-[#20bd5a] transition active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                    Contact on WhatsApp
-                </a>
+                <!-- Controls Bar -->
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 bg-slate-800/90 backdrop-blur border border-white/10 rounded-full p-2 flex gap-4 shadow-2xl">
+                     <button onclick="startCall('video')" class="w-12 h-12 rounded-full bg-blue-600 text-white hover:bg-blue-500 transition flex items-center justify-center shadow-lg shadow-blue-900/50" title="Start Video Call">
+                         <i class="fas fa-video"></i>
+                     </button>
+                     <button onclick="startCall('screen')" class="w-12 h-12 rounded-full bg-purple-600 text-white hover:bg-purple-500 transition flex items-center justify-center shadow-lg shadow-purple-900/50" title="Share Screen">
+                         <i class="fas fa-desktop"></i>
+                     </button>
+                     <button onclick="toggleMic()" id="btn-mic" class="w-12 h-12 rounded-full bg-slate-700 text-white hover:bg-slate-600 transition flex items-center justify-center">
+                         <i class="fas fa-microphone"></i>
+                     </button>
+                     <button onclick="endCall()" class="w-12 h-12 rounded-full bg-red-600 text-white hover:bg-red-500 transition flex items-center justify-center shadow-lg shadow-red-900/50" title="End Call">
+                         <i class="fas fa-phone-slash"></i>
+                     </button>
+                </div>
+            </div>
 
+            <!-- VIEW 4: MAP (Dedicated) -->
+            <div id="view-map" class="view-section hidden flex-1 flex flex-col h-full relative bg-slate-100">
+                <div id="map" class="absolute inset-0 z-0"></div>
+                
+                <!-- Map Controls -->
+                <div class="absolute top-4 left-4 z-[1000] bg-white/90 backdrop-blur px-4 py-3 rounded-xl shadow-xl border border-white flex flex-col gap-2">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Geo-Location</h3>
+                    <button onclick="broadcastLocation()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition flex items-center gap-2 shadow-lg shadow-blue-200">
+                        <i class="fas fa-location-arrow"></i> Broadcast Live GPS
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 5: FILES -->
+            <div id="view-files" class="view-section hidden flex-1 p-4 md:p-6 overflow-y-auto bg-slate-50/50">
+                <div class="flex flex-col h-full gap-4 max-w-4xl mx-auto">
+                    <div onclick="document.getElementById('file-input').click()" class="border-2 border-dashed border-slate-300 rounded-3xl p-8 flex flex-col items-center justify-center bg-white hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer group shrink-0 min-h-[200px]">
+                        <input type="file" id="file-input" multiple class="hidden">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                            <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-700">Tap to Upload Files</h3>
+                        <p class="text-xs text-slate-400 mt-1">Supports All Formats • No Limits</p>
+                    </div>
+                    <div class="flex-1 bg-white border border-slate-200 rounded-3xl p-4 md:p-6 flex flex-col shadow-sm min-h-[300px]">
+                        <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                            <span class="text-xs font-bold text-slate-500 uppercase">Transfer Activity</span>
+                            <button onclick="document.getElementById('transfer-list').innerHTML=''" class="text-slate-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div id="transfer-list" class="flex-1 overflow-y-auto space-y-2 py-2"></div>
+                        <div class="pt-4 border-t border-slate-100">
+                             <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                <span id="current-file-name">Idle</span>
+                                <span id="current-percent">0%</span>
+                             </div>
+                             <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div id="main-progress" class="h-full bg-blue-600 w-0 transition-all"></div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 6: CODE -->
+            <div id="view-code" class="view-section hidden flex-1 flex flex-col h-full bg-white">
+                <div id="code-container" class="flex-1 flex flex-col relative bg-white">
+                    <div class="h-12 bg-white border-b border-slate-200 flex items-center justify-between px-4 select-none">
+                        <div class="flex items-center gap-2">
+                            <select id="lang-select" onchange="changeLang()" class="bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 rounded-lg px-2 py-1.5 outline-none">
+                                <option value="python">Python (Pyodide)</option>
+                                <option value="html">HTML5</option>
+                                <option value="sql">SQL</option>
+                            </select>
+                            <span class="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-1 rounded hidden md:inline">SYNC ON</span>
+                        </div>
+                        <div class="flex gap-2">
+                             <button onclick="runCode()" class="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 shadow-md flex items-center gap-2">
+                                <i class="fas fa-play"></i> <span class="hidden md:inline">RUN</span>
+                             </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                        <div id="editor" class="flex-1 text-sm md:w-3/5 border-r border-slate-200"># Mitanshu Code Studio
+# Engineering Excellence
+def system_check():
+    print("Optimization Complete.")
+    print("Modular Architecture: Active")
+    
+system_check()
+</div>
+                        <div class="h-1/3 md:h-full md:w-2/5 bg-slate-50 flex flex-col border-t md:border-t-0 border-slate-200">
+                            <div class="bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-500 border-b border-slate-200 flex justify-between items-center">
+                                <span>OUTPUT / CONSOLE</span>
+                                <button onclick="document.getElementById('output-text').innerText=''" class="hover:text-red-500"><i class="fas fa-ban"></i></button>
+                            </div>
+                            <div class="relative flex-1 overflow-hidden">
+                                <div id="output-text" class="absolute inset-0 p-4 font-mono text-xs text-slate-700 overflow-auto whitespace-pre-wrap"></div>
+                                <iframe id="html-frame" class="absolute inset-0 w-full h-full bg-white hidden border-none"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- INCOMING CALL MODAL -->
+    <div id="incoming-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-md">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-6 max-w-sm w-full animate-float border border-white/20">
+            <div class="relative">
+                <div class="absolute inset-0 bg-blue-400 rounded-full animate-ping opacity-20"></div>
+                <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shadow-inner relative z-10">
+                    <i class="fas fa-phone-alt text-4xl animate-ring"></i>
+                </div>
+            </div>
+            <div class="text-center">
+                <h3 class="text-2xl font-black text-slate-800">Incoming Call</h3>
+                <p class="text-slate-500 text-sm mt-1">Secure Peer Connection Request</p>
+            </div>
+            <div class="flex gap-4 w-full">
+                <button onclick="rejectCall()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-red-50 hover:text-red-600 transition">DECLINE</button>
+                <button onclick="acceptCall()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition">ACCEPT</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-32 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl transition-all translate-y-20 opacity-0 z-50 flex items-center gap-2">
-        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> <span id="toast-msg">Notification</span>
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-20 md:bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center gap-3 text-xs font-bold whitespace-nowrap">
+        <i class="fas fa-info-circle text-blue-400"></i> <span id="toast-msg">Notification</span>
     </div>
 
     <script>
-        // --- LOGIC CORE ---
-        const CHUNK_SIZE = 16384 * 4; // 64KB Chunks
-        let peer = new Peer();
-        let conn;
-        let fileQueue = [];
-        let currentFileIndex = 0;
-        let incomingChunks = [];
-        let startTime = 0;
-
-        // DOM Elements
-        const statusText = document.getElementById('status-text');
-        const progressBar = document.getElementById('progress-bar');
-        const fileInput = document.getElementById('file-input');
-        const transferList = document.getElementById('transfer-list');
-        const currentOp = document.getElementById('current-op');
-        const statusDot = document.getElementById('status-dot');
-        const fileCountDisplay = document.getElementById('file-count');
-
-        // AD BANNER LOGIC (Updated to Bottom Slide)
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const adBanner = document.getElementById('ad-banner');
-                adBanner.classList.remove('translate-y-full');
-            }, 5000); // 5 Seconds Delay
-        });
-
-        function closeAd() {
-            const adBanner = document.getElementById('ad-banner');
-            adBanner.classList.add('translate-y-full');
-            // Optional: Remove completely after animation
-            // setTimeout(() => adBanner.style.display = 'none', 500); 
-        }
-
-        // Modal Logic (Info Button)
-        function toggleModal() {
-            const modal = document.getElementById('info-modal');
-            if(modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.remove('modal-enter');
-                    modal.classList.add('modal-active');
-                }, 10);
-            } else {
-                modal.classList.remove('modal-active');
-                modal.classList.add('modal-enter');
-                setTimeout(() => modal.classList.add('hidden'), 200);
-            }
-        }
-
-        // Service Worker (Uncomment for Production)
-        if ('serviceWorker' in navigator) {
-             window.addEventListener('load', () => {
-                 navigator.serviceWorker.register('/sw.js').catch(err => console.log("SW skipped for local testing"));
-             });
-        }
-
-        // File Selection UI
-        fileInput.onchange = () => {
-            const files = fileInput.files;
-            if(files.length > 0) {
-                fileCountDisplay.innerText = `${files.length} files queued`;
-                fileCountDisplay.classList.remove('hidden');
-                
-                transferList.innerHTML = ''; // Clear old list
-                Array.from(files).forEach((f, index) => {
-                    const div = document.createElement('div');
-                    div.className = "flex justify-between items-center p-3 mb-2 bg-slate-50 border border-slate-100 rounded-xl text-[11px] font-semibold";
-                    div.innerHTML = `
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="text-slate-400 font-mono">0${index+1}</span>
-                            <span class="truncate text-slate-700">${f.name}</span>
-                        </div>
-                        <span class="text-blue-600 text-[10px] bg-blue-50 px-2 py-1 rounded border border-blue-100">
-                            ${(f.size/1024/1024).toFixed(2)} MB
-                        </span>`;
-                    transferList.appendChild(div);
-                });
-                showToast(`${files.length} Files Queued. Ready.`);
-            }
+        // --- CORE SYSTEM ---
+        const SYS = {
+            peer: null, 
+            conn: null, 
+            call: null, 
+            localStream: null,
+            editor: null, 
+            map: null, 
+            pyodide: null,
+            myId: null, 
+            targetId: null, // Stores ID from URL
+            remotePeerId: null, // Stores connected peer ID for callbacks
+            isMicMuted: false, 
+            pendingCall: null
         };
 
-        // Toast System
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
-        }
+        window.onload = () => {
+            // 1. Capture Peer ID from URL immediately
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.get('peer')) {
+                SYS.targetId = urlParams.get('peer');
+                document.getElementById('remote-id').value = SYS.targetId;
+                document.getElementById('auto-connect-msg').classList.remove('hidden');
+            }
 
-        // ID Management
-        function copyID() {
-            const id = document.getElementById('peer-id').innerText;
-            if(id === 'Initializing...') return;
-            navigator.clipboard.writeText(id);
-            showToast("ID Copied to Clipboard");
-        }
+            // 2. Init System
+            initPeer();
+            initUI();
+            
+            // 3. Defer heavy loads
+            setTimeout(() => initEditor(), 800);
+            setTimeout(() => loadPython(), 2000);
+        };
 
-        // PeerJS Setup
-        peer.on('open', (id) => {
-            document.getElementById('peer-id').innerText = id;
-            statusText.innerText = "System Ready";
-            statusDot.className = "w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]";
-        });
+        // --- NETWORK (PEERJS) - REFACTORED FOR STABILITY ---
+        function initPeer() {
+            SYS.peer = new Peer();
+            
+            SYS.peer.on('open', id => {
+                SYS.myId = id;
+                document.getElementById('my-id').innerText = id;
+                updateStatus('ONLINE', 'emerald');
 
-        peer.on('error', (err) => {
-            statusText.innerText = "Error Detected";
-            currentOp.innerText = err.type.toUpperCase();
-            statusDot.className = "w-2 h-2 rounded-full bg-red-500";
-            showToast(`Error: ${err.type}`);
-        });
-
-        // Receiver Logic
-        peer.on('connection', (connection) => {
-            conn = connection;
-            statusText.innerText = "Peer Connected";
-            statusDot.className = "w-2 h-2 rounded-full bg-blue-500 animate-pulse";
-            showToast("Incoming Connection Established");
-            setupReceiver();
-        });
-
-        function setupReceiver() {
-            let receivedSize = 0;
-            let totalSize = 0;
-            let fileName = "";
-            let fileType = "";
-
-            conn.on('data', (data) => {
-                if (data.type === 'START') {
-                    incomingChunks = [];
-                    receivedSize = 0;
-                    totalSize = data.size;
-                    fileName = data.name;
-                    fileType = data.mime;
-                    
-                    statusText.innerText = "Receiving Data...";
-                    currentOp.innerText = `DOWNLOADING: ${fileName}`;
-                    startTime = Date.now();
-                } 
-                else if (data.type === 'CHUNK') {
-                    incomingChunks.push(data.chunk);
-                    receivedSize += data.chunk.byteLength;
-                    const percent = Math.floor((receivedSize / totalSize) * 100);
-                    updateUI(percent, receivedSize);
-                } 
-                else if (data.type === 'END') {
-                    const fullBlob = new Blob(incomingChunks, { type: fileType });
-                    const url = URL.createObjectURL(fullBlob);
-                    
-                    const btn = document.createElement('a');
-                    btn.href = url;
-                    btn.download = fileName;
-                    btn.className = "bg-white border border-green-200 text-green-700 px-4 py-3 rounded-xl shadow-sm text-xs font-bold hover:bg-green-50 transition flex items-center justify-between group w-full sm:w-auto";
-                    btn.innerHTML = `
-                        <span class="truncate max-w-[150px]">${fileName}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 group-hover:translate-y-1 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    `;
-                    
-                    document.getElementById('file-list').appendChild(btn);
-                    document.getElementById('download-area').classList.remove('hidden');
-                    
-                    statusText.innerText = "Transfer Complete";
-                    currentOp.innerText = "IDLE - WAITING FOR NEXT";
-                    progressBar.style.width = '0%';
+                // AUTO-CONNECT LOGIC: Moved here to prevent race conditions
+                if(SYS.targetId) {
+                    showToast("Found Link. Connecting...");
+                    connectToPeer(SYS.targetId);
                 }
+            });
+
+            SYS.peer.on('connection', c => {
+                // Incoming Connection Handler
+                SYS.conn = c;
+                SYS.remotePeerId = c.peer; // Save their ID
+                document.getElementById('remote-id').value = c.peer; // Fill input for visual
+                setupDataLink();
+                showToast("Peer Connected");
+            });
+
+            SYS.peer.on('call', call => {
+                SYS.pendingCall = call;
+                SYS.remotePeerId = call.peer; // Save caller ID
+                document.getElementById('incoming-modal').classList.remove('hidden');
+            });
+            
+            SYS.peer.on('error', err => {
+                console.error(err);
+                showToast("Network Error: " + err.type);
             });
         }
 
-        function updateUI(percent, bytesLoaded) {
-            progressBar.style.width = percent + '%';
+        function connectToPeer(idOverride = null) {
+            const id = idOverride || document.getElementById('remote-id').value.trim();
+            if(!id) return showToast("Enter Peer ID");
             
-            const now = Date.now();
-            const duration = (now - startTime) / 1000;
-            if(duration > 0) {
-                const speed = (bytesLoaded / 1024) / duration; // KB/s
-                const speedText = speed > 1024 
-                    ? (speed/1024).toFixed(1) + " MB/s" 
-                    : Math.floor(speed) + " KB/s";
-                document.getElementById('speed-indicator').innerText = speedText;
-            }
-        }
-
-        // Sender Logic
-        function startBatchTransfer() {
-            const targetId = document.getElementById('remote-id').value;
-            fileQueue = Array.from(fileInput.files);
-
-            if (!targetId || fileQueue.length === 0) {
-                showToast("ID or Files Missing!");
-                return;
-            }
-
-            statusText.innerText = "Negotiating Connection...";
-            conn = peer.connect(targetId);
-
+            if(SYS.conn) SYS.conn.close(); // Close existing
+            
+            showToast("Connecting...");
+            const conn = SYS.peer.connect(id);
+            
             conn.on('open', () => {
-                showToast("Connected! Starting Batch...");
-                currentFileIndex = 0;
-                sendNextInQueue();
+                SYS.conn = conn;
+                SYS.remotePeerId = id;
+                setupDataLink();
+                showToast("Connected Securely");
+                document.getElementById('auto-connect-msg').classList.add('hidden');
+                switchTab('chat'); 
             });
+
+            conn.on('error', err => showToast("Connection Failed"));
+        }
+
+        function setupDataLink() {
+            updateStatus('LINKED', 'blue');
+            startPingLoop();
             
-            conn.on('error', () => {
-                showToast("Connection Failed. Check ID.");
+            SYS.conn.on('data', data => {
+                if(data.type === 'PING') { SYS.conn.send({type: 'PONG', ts: data.ts}); }
+                else if(data.type === 'PONG') { measureLatency(data.ts); }
+                else if(data.type === 'CHAT') { addChat(data.msg, false); }
+                else if(data.type === 'CODE') { syncCode(data); }
+                else if(data.type === 'GPS') { updateMapMarker(data); }
+                else if(data.type === 'FILE_CHUNK') { receiveChunk(data); }
+                else if(data.type === 'FILE_START') { startFileReceive(data); }
+                else if(data.type === 'FILE_END') { finishFileReceive(); }
+            });
+
+            SYS.conn.on('close', () => updateStatus('OFFLINE', 'red'));
+        }
+
+        // --- VIDEO CALLS (FULL DUPLEX FIX) ---
+        function acceptCall() {
+            document.getElementById('incoming-modal').classList.add('hidden');
+            if(!SYS.pendingCall) return;
+            
+            navigator.mediaDevices.getUserMedia({video:true, audio:true}).then(stream => {
+                SYS.localStream = stream;
+                document.getElementById('local-video').srcObject = stream;
+                
+                // Answer the call with our stream
+                SYS.pendingCall.answer(stream);
+                
+                // Important: Handle the remote stream when it arrives
+                handleStream(SYS.pendingCall);
+                switchTab('video');
+            }).catch(e => {
+                showToast("Mic/Cam Error: " + e.message);
+                console.error(e);
             });
         }
 
-        async function sendNextInQueue() {
-            if (currentFileIndex < fileQueue.length) {
-                const file = fileQueue[currentFileIndex];
-                statusText.innerText = `Sending File ${currentFileIndex + 1}/${fileQueue.length}`;
-                currentOp.innerText = `UPLOADING: ${file.name.toUpperCase()}`;
-                startTime = Date.now();
-                await processAndSend(file);
-            } else {
-                statusText.innerText = "Batch Complete";
-                currentOp.innerText = "ALL FILES DELIVERED";
-                showToast("All files sent successfully!");
-                setTimeout(() => { progressBar.style.width = '0%'; }, 2000);
+        async function startCall(type) {
+            const target = SYS.remotePeerId || document.getElementById('remote-id').value;
+            if(!target) return showToast("No Peer Linked");
+            
+            try {
+                let s;
+                if (type === 'screen') {
+                    s = await navigator.mediaDevices.getDisplayMedia({video: { cursor: "always" }, audio: true});
+                } else {
+                    s = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                }
+                
+                SYS.localStream = s;
+                document.getElementById('local-video').srcObject = s;
+                
+                // Initiate Call
+                const call = SYS.peer.call(target, s);
+                handleStream(call);
+                
+                switchTab('video');
+                
+                if (type === 'screen') {
+                    s.getVideoTracks()[0].onended = () => { endCall(); showToast("Screen Share Ended"); };
+                }
+
+            } catch(e) { 
+                console.error(e);
+                showToast("Media Error: " + e.message); 
             }
         }
 
-        async function processAndSend(file) {
-            conn.send({ type: 'START', name: file.name, size: file.size, mime: file.type });
+        function handleStream(call) {
+            SYS.call = call;
+            document.getElementById('call-placeholder').classList.add('hidden');
+            
+            call.on('stream', remoteStream => {
+                const vid = document.getElementById('remote-video');
+                vid.srcObject = remoteStream;
+                vid.play().catch(e => console.log("Auto-play blocked", e));
+            });
+            
+            call.on('close', endCall);
+            call.on('error', e => showToast("Call Error"));
+        }
 
-            let offset = 0;
-            // Using a recursive function with setTimeout to keep UI responsive
-            const readNext = () => {
-                if (offset < file.size) {
-                    const slice = file.slice(offset, offset + CHUNK_SIZE);
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        conn.send({ type: 'CHUNK', chunk: e.target.result });
-                        offset += CHUNK_SIZE;
-                        const percent = Math.min(100, Math.floor((offset / file.size) * 100));
-                        updateUI(percent, offset);
-                        setTimeout(readNext, 0); 
-                    };
-                    reader.readAsArrayBuffer(slice);
-                } else {
-                    conn.send({ type: 'END' });
-                    currentFileIndex++;
-                    setTimeout(sendNextInQueue, 500); // Small delay between files
+        function endCall() {
+            if(SYS.call) SYS.call.close();
+            if(SYS.localStream) SYS.localStream.getTracks().forEach(t=>t.stop());
+            document.getElementById('remote-video').srcObject=null;
+            document.getElementById('local-video').srcObject=null;
+            document.getElementById('call-placeholder').classList.remove('hidden');
+        }
+
+        // --- UTILS ---
+        // --- UTILS ---
+// --- UTILS ---
+        function copyMyLink() {
+    if (!SYS.myId) return showToast("Pehle ID toh aane de!");
+
+    // Hardcoded URL taaki link hamesha sahi rahe
+    const baseUrl = "https://mitanshup2p.netlify.app"; 
+    const shareableUrl = `${baseUrl}/?peer=${SYS.myId}`;
+
+    // Alternative "Fall-back" Method
+    const tempInput = document.createElement("textarea");
+    tempInput.value = shareableUrl;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999); // Mobile ke liye
+
+    try {
+        const successful = document.execCommand('copy');
+        if(successful) {
+            showToast("Link Copied (Legacy Style)!");
+        } else {
+            throw new Error('Fallback failed');
+        }
+    } catch (err) {
+        // Agar dono fail ho gaye toh prompt dikha do (Rebellious fix)
+        window.prompt("Copy this link manually:", shareableUrl);
+    }
+
+    document.body.removeChild(tempInput);
+}
+        // --- NAVIGATION & UI (Unchanged Core) ---
+        function switchTab(id) {
+            const views = ['dashboard', 'chat', 'video', 'map', 'files', 'code'];
+            views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+            const targetView = document.getElementById('view-' + id);
+            if(targetView) targetView.classList.remove('hidden');
+            views.forEach(v => {
+                const btn = document.getElementById('nav-' + v);
+                if(btn) {
+                    btn.classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                    btn.classList.add('text-slate-400', 'hover:bg-slate-100');
                 }
-            };
-            readNext();
+            });
+            const activeBtn = document.getElementById('nav-' + id);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'hover:bg-slate-100');
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+            }
+            if(id === 'code' && SYS.editor) setTimeout(() => SYS.editor.resize(), 100);
+            if(id === 'map' && SYS.map) setTimeout(() => SYS.map.invalidateSize(), 300);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+
+        function updateStatus(txt, color) {
+            const el = document.getElementById('connection-status');
+            const colors = { emerald: 'text-emerald-600 bg-emerald-50 border-emerald-100', red: 'text-red-600 bg-red-50 border-red-100', blue: 'text-blue-600 bg-blue-50 border-blue-100' };
+            el.className = `flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold font-mono transition-all ${colors[color]}`;
+            el.innerHTML = `<span class="w-2 h-2 rounded-full bg-${color}-500 animate-pulse"></span> ${txt}`;
+        }
+        
+        function rejectCall() {
+            document.getElementById('incoming-modal').classList.add('hidden');
+            if(SYS.pendingCall) SYS.pendingCall.close();
+            SYS.pendingCall = null;
+        }
+
+        function toggleMic() {
+            if(SYS.localStream) {
+                const track = SYS.localStream.getAudioTracks()[0];
+                if(track) { 
+                    track.enabled = !track.enabled; 
+                    SYS.isMicMuted = !track.enabled; 
+                    const btn = document.getElementById('btn-mic');
+                    if(SYS.isMicMuted) {
+                        btn.classList.add('bg-red-500');
+                        btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                    } else {
+                        btn.classList.remove('bg-red-500');
+                        btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    }
+                }
+            }
+        }
+
+        // --- FEATURE LOGIC (Map, Chat, Files, Code) ---
+        // (Kept standard from previous version but ensuring SYS context is used)
+        function startPingLoop() { setInterval(() => { if(SYS.conn && SYS.conn.open) SYS.conn.send({type: 'PING', ts: Date.now()}); }, 5000); }
+        function measureLatency(startTs) {
+            const lat = Math.round((Date.now() - startTs) / 2);
+            document.getElementById('ping-indicator').innerText = lat + 'ms';
+            document.getElementById('ping-indicator').classList.remove('hidden');
+            document.getElementById('ping-mobile').innerText = lat + 'ms';
+        }
+        function sendMsg() {
+            const inp = document.getElementById('chat-input');
+            const msg = inp.value.trim();
+            if(!msg || !SYS.conn) return;
+            SYS.conn.send({type:'CHAT', msg:msg});
+            addChat(msg, true);
+            inp.value = '';
+        }
+        function addChat(msg, isMe) {
+            const box = document.getElementById('chat-container');
+            const d = document.createElement('div');
+            d.className = `flex ${isMe ? 'justify-end' : 'justify-start'} animate-[fadeIn_0.2s]`;
+            d.innerHTML = `<div class="max-w-[80%] px-3 py-2 rounded-2xl text-xs ${isMe ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-slate-100 text-slate-700 rounded-tl-sm'}">${msg}</div>`;
+            box.appendChild(d);
+            box.scrollTop = box.scrollHeight;
+            if(!isMe && document.getElementById('view-chat').classList.contains('hidden')) showToast("New Message");
+        }
+        function broadcastLocation() {
+            if(!navigator.geolocation) return showToast("No GPS");
+            navigator.geolocation.getCurrentPosition(p => {
+                const {latitude:lat, longitude:lng} = p.coords;
+                if(!SYS.map) { 
+                     SYS.map = L.map('map').setView([lat, lng], 15);
+                     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 19}).addTo(SYS.map);
+                } else { SYS.map.setView([lat, lng], 15); }
+                if(SYS.markers && SYS.markers.me) SYS.map.removeLayer(SYS.markers.me);
+                SYS.markers = { me: L.marker([lat,lng]).addTo(SYS.map).bindPopup("ME").openPopup() };
+                if(SYS.conn) SYS.conn.send({type:'GPS', lat:lat, lng:lng});
+                showToast("Location Broadcasted");
+            });
+        }
+        function updateMapMarker(d) {
+            if(!SYS.map) {
+                SYS.map = L.map('map').setView([d.lat, d.lng], 15);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {maxZoom: 19}).addTo(SYS.map);
+            }
+            if(SYS.markers && SYS.markers.peer) SYS.map.removeLayer(SYS.markers.peer);
+            const peerIcon = L.divIcon({ className: 'custom-div-icon', html: "<div style='background-color:#ef4444; width:16px; height:16px; border-radius:50%; box-shadow:0 0 10px #ef4444; border:2px solid white;'></div>", iconSize: [16, 16] });
+            SYS.markers.peer = L.marker([d.lat,d.lng], {icon: peerIcon}).addTo(SYS.map).bindPopup("PEER").openPopup();
+            SYS.map.setView([d.lat, d.lng], 15);
+            showToast("Peer Location Updated");
+        }
+
+        // File Transfer & Code Sync
+        let fBuffer=[], fMeta=null;
+        document.getElementById('file-input').onchange = async (e) => {
+            if(!SYS.conn) return showToast("Connect First");
+            for(let f of e.target.files) {
+                SYS.conn.send({type:'FILE_START', name:f.name, mime:f.type, size:f.size});
+                const buf = await f.arrayBuffer();
+                const chunkSz = 16384; 
+                for(let i=0; i<buf.byteLength; i+=chunkSz) {
+                    SYS.conn.send({type:'FILE_CHUNK', data:buf.slice(i, i+chunkSz)});
+                    if(i%100===0) await new Promise(r=>setTimeout(r,1));
+                    updateProgress((i/buf.byteLength)*100, f.name);
+                }
+                SYS.conn.send({type:'FILE_END'});
+                addToLog(f.name, 'out');
+            }
+        };
+        function startFileReceive(m) { fBuffer=[]; fMeta=m; updateProgress(0, m.name); }
+        function receiveChunk(d) { fBuffer.push(d.data); updateProgress(50, fMeta.name); }
+        function finishFileReceive() {
+            const blob = new Blob(fBuffer, {type:fMeta.mime});
+            const url = URL.createObjectURL(blob);
+            addToLog(fMeta.name, 'in', url);
+            updateProgress(100, "Done");
+            fBuffer=[];
+        }
+        function updateProgress(pct, txt) {
+            document.getElementById('current-percent').innerText = Math.round(pct)+'%';
+            document.getElementById('current-file-name').innerText = txt;
+            document.getElementById('main-progress').style.width = pct+'%';
+        }
+        function addToLog(name, type, url=null) {
+            const list = document.getElementById('transfer-list');
+            const d = document.createElement('div');
+            d.className = "flex items-center gap-3 p-2 rounded-lg bg-slate-50 text-xs text-slate-600";
+            d.innerHTML = `<i class="fas ${type==='out' ? 'fa-arrow-up text-blue-500' : 'fa-arrow-down text-emerald-500'}"></i><span class="flex-1 truncate font-bold">${name}</span>${url ? `<a href="${url}" download="${name}" class="text-blue-600 hover:underline">Save</a>` : '<span class="text-slate-400">Sent</span>'}`;
+            list.prepend(d);
+        }
+        function initEditor() {
+            SYS.editor = ace.edit("editor");
+            SYS.editor.setTheme("ace/theme/chrome");
+            SYS.editor.session.setMode("ace/mode/python");
+            SYS.editor.setOptions({fontSize: "14px", fontFamily: "JetBrains Mono", showPrintMargin: false});
+            SYS.editor.on('change', () => { if(SYS.conn && !SYS.remoteEdit) SYS.conn.send({type:'CODE', val:SYS.editor.getValue(), lang:document.getElementById('lang-select').value}); });
+        }
+        function syncCode(d) {
+            SYS.remoteEdit=true; 
+            if(document.getElementById('lang-select').value!==d.lang) { document.getElementById('lang-select').value=d.lang; changeLang(); }
+            SYS.editor.setValue(d.val, 1); 
+            SYS.remoteEdit=false;
+        }
+        function changeLang() { SYS.editor.session.setMode("ace/mode/"+document.getElementById('lang-select').value); }
+        async function loadPython() { try{ SYS.pyodide = await loadPyodide(); }catch(e){} }
+        async function runCode() {
+            const lang = document.getElementById('lang-select').value;
+            const code = SYS.editor.getValue();
+            const out = document.getElementById('output-text');
+            const frame = document.getElementById('html-frame');
+            if(lang==='html') { out.style.display='none'; frame.style.display='block'; frame.srcdoc=code; }
+            else {
+                frame.style.display='none'; out.style.display='block'; out.innerText="Running...";
+                if(lang==='python' && SYS.pyodide) { try { SYS.pyodide.runPython(`import sys; from io import StringIO; sys.stdout = StringIO()`); await SYS.pyodide.runPythonAsync(code); out.innerText = SYS.pyodide.runPython("sys.stdout.getvalue()"); } catch(e) { out.innerText = e; } } 
+                else if(lang==='sql') { try { out.innerText = JSON.stringify(alasql(code), null, 2); } catch(e) { out.innerText=e; } }
+            }
+        }
+        function initUI() {
+            const drop = document.body;
+            drop.addEventListener('dragover', e=>e.preventDefault());
+            drop.addEventListener('drop', e=>{ e.preventDefault(); switchTab('files'); });
         }
     </script>
 </body>
