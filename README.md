@@ -1,6 +1,6 @@
 #🚀 MITANSHU P2P ENGINE - ENTERPRISE SUITE v14.0 (Arcade Patch)
 
-"Fuck nothing in life is achievable. You just need the right code and a rebellious mindset." Welcome to the ultimate, zero-trust, browser-based Peer-to-Peer (P2P) network. Bina kisi creepy central server ke, direct device-to-device communication. Sirf ek HTML file mein poora Enterprise Suite aur ab Arcade pel diya hai tera bhai ne. No backend bullshit, no data harvesting—just pure, unadulterated WebRTC magic.
+"You just need the right code and a rebellious mindset." Welcome to the ultimate, zero-trust, browser-based Peer-to-Peer (P2P) network. Bina kisi creepy central server ke, direct device-to-device communication. Sirf ek HTML file mein poora Enterprise Suite aur ab Arcade pel diya hai tera bhai ne. No backend bullshit, no data harvesting—just pure, unadulterated WebRTC magic.
 
 Designed and architected by Mitanshu Bhasin (Cyber Hygiene Practitioner & Python Elite).
 
