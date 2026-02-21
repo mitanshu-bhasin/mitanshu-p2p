@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mitanshu-bhasin.github.io/mitanshu-p2p/sitemap.xml
